@@ -21,7 +21,7 @@ An enterprise-grade, deterministic browser memory profiling engine built on **Pl
 
 ## 🎯 The Engineering Problem
 
-Single Page Applications (SPAs) often suffer from hidden client-side memory degradation caused by:
+**Single Page Applications (SPAs) often suffer from hidden client-side memory degradation caused by:**
 - Detached DOM elements kept alive by lingering global references or event closures.
 - Unbounded array allocations within asynchronous job queues.
 - Failure of the JavaScript Garbage Collector (GC) to reclaim disconnected tree structures.
@@ -79,36 +79,26 @@ browser-leak-sentinel/
 ```
 ---
 
-## 🚀 Quickstart Guide
-
-1. **Clone the Repository:**
-```
+### 1. Clone & Set Up Environment
+```bash
 git clone https://github.com/satyanarayana51115/browser-leak-sentinel.git
 cd browser-leak-sentinel
-```
-2. **Set Up Environment:**
-```
+
 python -m venv .venv
-```
-3. **Activate On Windows:**
-```
+# Windows:
 .\.venv\Scripts\activate
-```
-4. **Activate OnLinux/macOS:**
-```
-source .venv/bin/activate
-```
-5. **Install Dependencies:**
-```
+# Linux/macOS:
+# source .venv/bin/activate
+
 pip install -r requirements.txt
 playwright install chromium
+
 ```
-6. Launch the Real-Time Telemetry Dashboard:**
-Open your primary terminal and execute:
+### 2. Launch the Real-Time Telemetry Dashboard:
 ```
 streamlit run app/dashboard.py
 ```
-7. **Start the Automated Profiler Engine:**
+### 3. Start the Automated Profiler Engine:
 In a second terminal window, initiate the 
 headless/headed profilint run:
 ```
@@ -120,14 +110,13 @@ Watch the live memory and DOM retention curves populate dynamically on the dashb
 
 ## ​📊 Recorded Telemetry Benchmark
 
-```text
+---
 
 Iteration Step JS Heap Used (MB) Retained DOM Nodes Delta Status
 Step 01 ~21.9 MB 30,066 Baseline Baseline
 Step 10 ~199.0 MB 1,55,053 Sustained Slope Increase
 Step 25 ~495.3 MB 4,55,083
 
-```
 ---
 
 ## 🛠️ Tech Stack
