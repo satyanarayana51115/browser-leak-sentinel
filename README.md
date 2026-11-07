@@ -114,9 +114,11 @@ Watch the live memory and DOM retention curves populate dynamically on the dashb
 
 Iteration Step | JS Heap Used (MB) | Retained DOM Nodes | Delta Status
 
-Step 01 ~21.9 MB 30,066 Baseline Baseline
-Step 10 ~199.0 MB 1,55,053 Sustained Slope Increase
-Step 25 ~495.3 MB 4,55,083
+Step 01          ~21.9 MB            30,066               Baseline Baseline
+
+Step 10          ~199.0 MB           1,55,053             Sustained Slope Increase
+
+Step 25          ~495.3 MB           4,55,083             🚨 CRITICAL SLOPE DETECTED
 
 ---
 
