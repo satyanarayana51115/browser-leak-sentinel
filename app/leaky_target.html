@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise ERP Simulation - Target App</title>
+  <style>
+    body {
+      background-color: #0b0f14;
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background-color: #121820;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 28px;
+      width: 500px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    h2 { 
+      color: #00E676; 
+      margin-top: 0; 
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+    p { 
+      color: #8b949e; 
+      line-height: 1.5; 
+      font-size: 14px;
+    }
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+    }
+    button {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #leakBtn { 
+      background-color: #ff4b4b; 
+      color: #ffffff; 
+    }
+    #leakBtn:hover { 
+      background-color: #ff6b6b; 
+    }
+    #normalBtn { 
+      background-color: #21262d; 
+      color: #c9d1d9; 
+      border: 1px solid #30363d;
+    }
+    #normalBtn:hover { 
+      background-color: #30363d; 
+    }
+    .status-panel {
+      margin-top: 24px;
+      padding: 14px;
+      border-radius: 6px;
+      background: #0d1117;
+      border: 1px solid #21262d;
+      font-family: "Consolas", monospace;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .val-danger { color: #ff6b6b; font-weight: bold; }
+    .val-info { color: #58a6ff; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Enterprise Invoice Processor (Simulation Target)</h2>
+    <p>Target single-page interface for automated browser profiling. Triggering batch operations simulates detached DOM tree retention and heap memory leaks.</p>
+    
+    <div class="button-group">
+      <button id="leakBtn" onclick="triggerMemoryLeak()">Trigger Leaky Batch</button>
+      <button id="normalBtn" onclick="triggerNormalAction()">Standard Action</button>
+    </div>
+
+    <div class="status-panel">
+      <div class="status-row">
+        <span>Detached Elements:</span>
+        <span id="nodeCount" class="val-danger">0</span>
+      </div>
+      <div class="status-row">
+        <span>Completed Actions:</span>
+        <span id="actionCount" class="val-info">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="sandbox" style="display: none;"></div>
+
+  <script>
+    // Global references prevent garbage collection (Simulated Memory Leak)
+    const retainedLeakedReferences = [];
+    let completedActions = 0;
+    let retainedNodeCounter = 0;
+
+    function triggerMemoryLeak() {
+      completedActions++;
+      
+      // Inject 5,000 detached DOM elements with heavy retained payload per iteration
+      for (let i = 0; i < 5000; i++) {
+        const detachedNode = document.createElement('div');
+        detachedNode.innerHTML = `<span>Simulated Transaction Payload Reference #${completedActions}_${i}</span>`;
+        
+        retainedLeakedReferences.push({
+          domElement: detachedNode,
+          chunkBuffer: new Array(1000).fill(`PAYLOAD_ALLOC_BLOCK_${completedActions}_${i}`)
+        });
+        retainedNodeCounter++;
+      }
+
+      document.getElementById('actionCount').innerText = completedActions;
+      document.getElementById('nodeCount').innerText = retainedNodeCounter.toLocaleString();
+    }
+
+    function triggerNormalAction() {
+      completedActions++;
+      document.getElementById('actionCount').innerText = completedActions;
+    }
+  </script>
+</body>
+</html>
