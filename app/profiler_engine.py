@@ -19,7 +19,7 @@ async def collect_cdp_metrics(cdp_session):
         "js_event_listeners": int(metrics.get("JSEventListeners", 0)),
     }
 
-async def run_profiler(iterations: int = 25, delay_per_step: float = 0.5):
+async def run_profiler(iterations: int = 25, delay_per_step: float = 1.0):
     """Orchestrate Playwright browser automation and stream telemetry metrics to disk."""
     os.makedirs(os.path.dirname(METRICS_FILE), exist_ok=True)
     
@@ -31,7 +31,7 @@ async def run_profiler(iterations: int = 25, delay_per_step: float = 0.5):
 
     async with async_playwright() as p:
         # Launch headed chromium to provide visual demonstration during screen capture
-        browser = await p.chromium.launch(headless=False, args=["--remote-debugging-port=9222"])
+        browser = await p.chromium.launch(headless=True, args=["--remote-debugging-port=9222"])
         page = await browser.new_page()
         
         # Initialize Chrome DevTools Protocol session
