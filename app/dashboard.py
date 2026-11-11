@@ -17,9 +17,13 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* Prevent window shaking / jitter by locking overflow */
+    html, body, [data-testid="stAppViewContainer"] {
+        overflow: hidden !important;
+    }
     .block-container {
-        padding-top: 4.2rem;
-        padding-bottom: 0.8rem;
+        padding-top: 3.8rem;
+        padding-bottom: 0.5rem;
         padding-left: 2rem;
         padding-right: 2rem;
     }
@@ -28,15 +32,15 @@ st.markdown(
         font-weight: 800;
         color: #00E676;
         letter-spacing: -0.5px;
-        margin-top: 6px;
+        margin-top: 4px;
         margin-bottom: 2px;
-        line-height: 1.35;
+        line-height: 1.3;
     }
     .header-sub {
         font-size: 0.92rem;
         font-weight: 600;
         color: #8b949e;
-        margin-bottom: 1.0rem;
+        margin-bottom: 0.8rem;
     }
     .metric-card {
         background-color: #121820;
@@ -83,16 +87,20 @@ st.markdown(
         font-weight: 700;
         color: #ff7b72;
     }
+    /* Fixed 4-sided uniform crisp red border */
     .alert-banner {
-        background-color: #181114;
-        border: 1.5px solid #ff4b4b;
+        background-color: #1a1114 !important;
+        border: 2px solid #ff4b4b !important;
+        outline: none !important;
+        box-sizing: border-box !important;
         border-radius: 6px;
-        padding: 8px 16px;
+        padding: 9px 16px;
         color: #ffffff;
         font-weight: 600;
         font-size: 0.88rem;
-        margin-top: 0.8rem;
-        margin-bottom: 0.8rem;
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+        display: block;
     }
     .alert-banner strong {
         color: #ff6b6b;
@@ -108,18 +116,35 @@ ENGINE_SCRIPT = os.path.join(os.path.dirname(__file__), "profiler_engine.py")
 # Sidebar Controls
 st.sidebar.markdown("### ⚙️ Profiler Controls")
 
-# Single-Click Profiler Launcher
-if st.sidebar.button("▶️ Start Live Profiler Run", type="primary", use_container_width=True):
+col_btn1, col_btn2 = st.sidebar.columns(2)
+with col_btn1:
+    start_run = st.button("▶️ Start Run", type="primary", use_container_width=True)
+with col_btn2:
+    reset_run = st.button("🔄 Reset", use_container_width=True)
+
+if reset_run:
+    if os.path.exists(METRICS_FILE):
+        try:
+            os.remove(METRICS_FILE)
+        except Exception:
+            pass
+    st.sidebar.info("Dashboard reset to zero!")
+    st.rerun()
+
+if start_run:
     if os.path.exists(METRICS_FILE):
         try:
             os.remove(METRICS_FILE)
         except Exception:
             pass
     subprocess.Popen([sys.executable, ENGINE_SCRIPT])
-    st.sidebar.success("🚀 Profiler started! Telemetry streaming...")
+    st.sidebar.success("🚀 Profiler started!")
+    time.sleep(0.3)
+    st.rerun()
 
 st.sidebar.markdown("---")
-refresh_rate = st.sidebar.slider("Telemetry Refresh Rate (sec)", min_value=0.5, max_value=2.0, value=1.0, step=0.25)
+# Fast refresh interval (0.5s) to guarantee ZERO dropped steps
+refresh_rate = st.sidebar.slider("Telemetry Refresh Rate (sec)", min_value=0.25, max_value=1.5, value=0.5, step=0.25)
 auto_refresh = st.sidebar.checkbox("Live Auto-Refresh", value=True)
 
 st.sidebar.markdown("---")
@@ -280,7 +305,21 @@ with dashboard_container.container():
             st.plotly_chart(fig_dom, use_container_width=True)
 
     else:
-        st.info("Awaiting telemetry stream... Click '▶️ Start Live Profiler Run' in the sidebar.")
+        # Clean Initial Zero State (No previous run lingering)
+        c1, c2, c3, c4 = st.columns(4)
+        for col, title in zip([c1, c2, c3, c4], ["JS HEAP (CURRENT)", "HEAP GROWTH (DELTA)", "ACTIVE DOM NODES", "AUTOMATED ACTIONS"]):
+            with col:
+                st.markdown(
+                    f"""
+                    <div class="metric-card">
+                        <div class="metric-label">{title}</div>
+                        <div class="metric-value-blue">--</div>
+                        <div class="metric-sub-white">Standby...</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+        st.info("⚡ Ready to profile. Click '▶️ Start Run' to launch runtime CDP telemetry.")
 
 # Auto-Refresh Loop
 if auto_refresh:

@@ -19,7 +19,7 @@ async def collect_cdp_metrics(cdp_session):
         "js_event_listeners": int(metrics.get("JSEventListeners", 0)),
     }
 
-async def run_profiler(iterations: int = 25, delay_per_step: float = 1.0):
+async def run_profiler(iterations: int = 25, delay_per_step: float = 1.2):
     """Orchestrate Playwright browser automation and stream telemetry metrics to disk."""
     os.makedirs(os.path.dirname(METRICS_FILE), exist_ok=True)
     
